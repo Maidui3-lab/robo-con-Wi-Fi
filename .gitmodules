@@ -1,0 +1,3 @@
+[submodule "Firmware/Middlewares"]
+	path = Firmware/Middlewares
+	url = https://github.com/Maidui3-lab/Middlewares
