@@ -9,33 +9,36 @@
 #include "app/robo-con.h"
 
 #define USB_TX_BUFFER_SIZE 1024U * 8U
-__attribute__RAM_D1__BSS__ static uint8_t TX_Buffer[USB_TX_BUFFER_SIZE];
-__attribute__DTCM__ static uint8_t RX_Buffer[2048];
-__attribute__DTCM__ static uint16_t Buffer_len;
-__attribute__DTCM__ bool CDC_Tramsmit_request = false;
+__attribute__RAM_D1__BSS__ uint8_t TX_Buffer[USB_TX_BUFFER_SIZE];
+__attribute__DTCM__BSS__ uint8_t RX_Buffer[2048];
+__attribute__DTCM__BSS__ uint16_t Buffer_len;
+__attribute__DTCM__BSS__ uint16_t tx_start_point;
+__attribute__DTCM__BSS__ bool Tramsmit_request;
+__attribute__DTCM__BSS__ bool tx_cplt;
 
-__attribute__DTCM__ static TX_THREAD CDC_Thread;
+__attribute__DTCM__ TX_THREAD CDC_Thread;
 
-__attribute__ITCM__ static void CDC_thread(ULONG thred_input);
+__attribute__ITCM__ void CDC_thread(ULONG thred_input);
 
-#define CDC_APP_STACK_SIZE                  512
-#define CDC_APP_THREAD_PRIO                 10
+#define CDC_APP_STACK_SIZE 512
+#define CDC_APP_THREAD_PRIO 10
 #define CDC_APP_THREAD_PREEMPTION_THRESHOLD CDC_APP_THREAD_PRIO
-#define CDC_APP_THREAD_TIME_SLICE           TX_NO_TIME_SLICE
-#define CDC_APP_THREAD_AUTO_START           TX_AUTO_START
-#define CDC_APP_THREAD_DONT_START           TX_DONT_START
+#define CDC_APP_THREAD_TIME_SLICE TX_NO_TIME_SLICE
+#define CDC_APP_THREAD_AUTO_START TX_AUTO_START
+#define CDC_APP_THREAD_DONT_START TX_DONT_START
 
 #define CDC_MAX_TRANSPORT_SIZE 512
-#define CDC_TRANSPORT_SPEED    115200
+#define CDC_TRANSPORT_SPEED 115200
 
-UINT cdc_init(VOID* memory_ptr)
+UINT cdc_init(VOID *memory_ptr)
 {
-    TX_BYTE_POOL* byte_pool = (TX_BYTE_POOL*)memory_ptr;
+    TX_BYTE_POOL *byte_pool = (TX_BYTE_POOL *)memory_ptr;
 
-    CHAR* pointer;
+    CHAR *pointer;
 
-    if (tx_byte_allocate(byte_pool, (VOID**)&pointer, CDC_APP_STACK_SIZE, TX_NO_WAIT) !=
-        TX_SUCCESS) {
+    if (tx_byte_allocate(byte_pool, (VOID **)&pointer, CDC_APP_STACK_SIZE, TX_NO_WAIT) !=
+        TX_SUCCESS)
+    {
         printf("cdc pool allocate error\r\n");
         return CDC_POOLERROR;
     }
@@ -50,8 +53,8 @@ UINT cdc_init(VOID* memory_ptr)
             CDC_APP_THREAD_PRIO,
             CDC_APP_THREAD_PREEMPTION_THRESHOLD,
             CDC_APP_THREAD_TIME_SLICE,
-            CDC_APP_THREAD_AUTO_START
-        )) {
+            CDC_APP_THREAD_AUTO_START))
+    {
         printf("cdc thread initializing error\r\n");
         return CDC_THREAD_ERROR;
     }
@@ -59,44 +62,72 @@ UINT cdc_init(VOID* memory_ptr)
     return CDC_SUCCSES;
 }
 
-static void CDC_thread(ULONG thred_input)
+void CDC_thread(ULONG thred_input)
 {
-    while (1) {
+    while (1)
+    {
         __enable_irq();
 
         HAL_GPIO_TogglePin(LEDUSB_GPIO_Port, LEDUSB_Pin);
 
-        if (CDC_Tramsmit_request) {
-            CDC_Tramsmit_request = false;
+        if (Tramsmit_request && tx_cplt)
+        {
+            tx_cplt = false;
+
+            if (tx_start_point > Buffer_len)
+            {
+            }
+            else
+            {
+            }
+
+            Tramsmit_request = false;
         }
 
         tx_thread_sleep(50);
     };
 }
 
-int _write(int file, char* ptr, int len)
+int _write(int file, char *ptr, int len)
 {
-    uint16_t llen;
     static uint16_t size;
+    static uint16_t rest;
+
     size = Buffer_len + len;
+    tx_start_point = Buffer_len;
 
-    if (size > USB_TX_BUFFER_SIZE) {
-        Buffer_len = 0;
-        static uint8_t rest;
-        rest = size - USB_TX_BUFFER_SIZE;
+    if (size > USB_TX_BUFFER_SIZE)
+    {
+        Buffer_len = size - USB_TX_BUFFER_SIZE;
+        rest = USB_TX_BUFFER_SIZE - tx_start_point;
 
-        for (uint16_t i = 0; i < rest; i++) {
+        for (uint16_t i = 0; i < rest; i++)
+        {
+            TX_Buffer[tx_start_point + i] = ptr[i];
+        }
+        for (uint16_t i = 0; i < Buffer_len; i++)
+        {
             TX_Buffer[i] = ptr[i + rest];
         }
     }
-
-    for (uint16_t i = 0; i < len; i++) {
-        TX_Buffer[i + Buffer_len] = ptr[len];
+    else
+    {
+        for (uint16_t i = 0; i < len; i++)
+        {
+            TX_Buffer[tx_start_point + i] = ptr[i];
+        }
+        Buffer_len += len;
     }
 
-    Buffer_len += len;
-    CDC_Tramsmit_request = true;
-    Buffer_len           = 0;
+    Tramsmit_request = true;
 
     return len;
+}
+
+void print_tx_cplt(UART_HandleTypeDef *huart)
+{
+    if (huart == &huart1)
+    {
+        tx_cplt = true;
+    }
 }

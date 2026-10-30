@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file    app_azure_rtos.c
-  * @author  MCD Application Team
-  * @brief   app_azure_rtos application implementation file
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    app_azure_rtos.c
+ * @author  MCD Application Team
+ * @brief   app_azure_rtos application implementation file
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2026 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* USER CODE BEGIN 1 */
@@ -30,6 +30,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "main.h"
+#include "app/robo-con.h"
 #include "app/printf.h"
 
 /* USER CODE END Includes */
@@ -53,16 +54,16 @@
 #if (USE_STATIC_ALLOCATION == 1)
 /* USER CODE BEGIN TX_Pool_Buffer */
 /* USER CODE END TX_Pool_Buffer */
-#if defined ( __ICCARM__ )
-#pragma data_alignment=4
+#if defined(__ICCARM__)
+#pragma data_alignment = 4
 #endif
 __ALIGN_BEGIN static UCHAR tx_byte_pool_buffer[TX_APP_MEM_POOL_SIZE] __ALIGN_END;
 static TX_BYTE_POOL tx_app_byte_pool;
 
 /* USER CODE BEGIN NX_Pool_Buffer */
 /* USER CODE END NX_Pool_Buffer */
-#if defined ( __ICCARM__ )
-#pragma data_alignment=4
+#if defined(__ICCARM__)
+#pragma data_alignment = 4
 #endif
 __ALIGN_BEGIN static UCHAR nx_byte_pool_buffer[NX_APP_MEM_POOL_SIZE] __ALIGN_END;
 static TX_BYTE_POOL nx_app_byte_pool;
@@ -84,10 +85,10 @@ static TX_BYTE_POOL robo_con_app_byte_pool;
 /* USER CODE END PFP */
 
 /**
-  * @brief  Define the initial system.
-  * @param  first_unused_memory : Pointer to the first unused memory
-  * @retval None
-  */
+ * @brief  Define the initial system.
+ * @param  first_unused_memory : Pointer to the first unused memory
+ * @retval None
+ */
 VOID tx_application_define(VOID *first_unused_memory)
 {
   /* USER CODE BEGIN  tx_application_define_1*/
@@ -114,7 +115,7 @@ VOID tx_application_define(VOID *first_unused_memory)
     if (status != TX_SUCCESS)
     {
       /* USER CODE BEGIN  App_ThreadX_Init_Error */
-      while(1)
+      while (1)
       {
       }
       /* USER CODE END  App_ThreadX_Init_Error */
@@ -123,7 +124,6 @@ VOID tx_application_define(VOID *first_unused_memory)
     /* USER CODE BEGIN  App_ThreadX_Init_Success */
 
     /* USER CODE END  App_ThreadX_Init_Success */
-
   }
 
   if (tx_byte_pool_create(&nx_app_byte_pool, "Nx App memory pool", nx_byte_pool_buffer, NX_APP_MEM_POOL_SIZE) != TX_SUCCESS)
@@ -143,7 +143,7 @@ VOID tx_application_define(VOID *first_unused_memory)
     if (status != NX_SUCCESS)
     {
       /* USER CODE BEGIN  MX_NetXDuo_Init_Error */
-      while(1)
+      while (1)
       {
       }
       /* USER CODE END  MX_NetXDuo_Init_Error */
@@ -151,7 +151,7 @@ VOID tx_application_define(VOID *first_unused_memory)
 
     /* USER CODE BEGIN MX_NetXDuo_Init_Success */
 
-    if(tx_byte_pool_create(&cdc_app_byte_pool, "CDC App memory pool", cdc_byte_pool_buffer, CDC_APP_MEM_POOL_SIZE) != TX_SUCCESS)
+    if (tx_byte_pool_create(&cdc_app_byte_pool, "CDC App memory pool", cdc_byte_pool_buffer, CDC_APP_MEM_POOL_SIZE) != TX_SUCCESS)
     {
       // Error
     }
@@ -161,17 +161,17 @@ VOID tx_application_define(VOID *first_unused_memory)
 
       memory_ptr = (VOID *)&cdc_app_byte_pool;
       status = cdc_init(memory_ptr);
-      if(status != CDC_SUCCSES)
+      if (status != CDC_SUCCSES)
       {
         // Error
-        while(1)
+        while (1)
         {
         }
       }
     }
-    
+
     /*-USER CODE BEGIN ROBO_CON */
-    if(tx_byte_pool_create(&robo_con_app_byte_pool,"robo-con App memory pool", robo_con_byte_pool_buffer, ROBO_CON_APP_MEM_POOL_SIZE) != TX_SUCCESS)
+    if (tx_byte_pool_create(&robo_con_app_byte_pool, "robo-con App memory pool", robo_con_byte_pool_buffer, ROBO_CON_APP_MEM_POOL_SIZE) != TX_SUCCESS)
     {
       // Error
     }
@@ -181,19 +181,17 @@ VOID tx_application_define(VOID *first_unused_memory)
 
       memory_ptr = (VOID *)&robo_con_app_byte_pool;
       status = robo_con_init(memory_ptr);
-      if(status != ROBO_CON_SUCCSES)
+      if (status != ROBO_CON_SUCCSES)
       {
         // Error
-        while(1)
+        while (1)
         {
         }
       }
     }
     /*-USER CODE END ROBO_CON */
 
-
     /* USER CODE END MX_NetXDuo_Init_Success */
-
   }
 
 #else
@@ -230,7 +228,6 @@ VOID tx_application_define(VOID *first_unused_memory)
   (void)first_unused_memory;
   /* USER CODE END DYNAMIC_MEM_ALLOC */
 #endif
-
 }
 
 /* USER CODE BEGIN 2 */
