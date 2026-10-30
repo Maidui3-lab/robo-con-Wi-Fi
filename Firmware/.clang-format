@@ -1,0 +1,8 @@
+BasedOnStyle: LLVM
+
+ColumnLimit: 100
+BreakStringLiterals: false
+
+AlignAfterOpenBracket: BlockIndent
+BinPackParameters:     false
+BinPackArguments:      false

@@ -30,104 +30,87 @@ __attribute__ITCM__ void CDC_thread(ULONG thred_input);
 #define CDC_MAX_TRANSPORT_SIZE 512
 #define CDC_TRANSPORT_SPEED 115200
 
-UINT cdc_init(VOID *memory_ptr)
-{
-    TX_BYTE_POOL *byte_pool = (TX_BYTE_POOL *)memory_ptr;
+UINT cdc_init(VOID *memory_ptr) {
+  TX_BYTE_POOL *byte_pool = (TX_BYTE_POOL *)memory_ptr;
 
-    CHAR *pointer;
+  CHAR *pointer;
 
-    if (tx_byte_allocate(byte_pool, (VOID **)&pointer, CDC_APP_STACK_SIZE, TX_NO_WAIT) !=
-        TX_SUCCESS)
-    {
-        printf("cdc pool allocate error\r\n");
-        return CDC_POOLERROR;
-    }
+  if (tx_byte_allocate(byte_pool, (VOID **)&pointer, CDC_APP_STACK_SIZE, TX_NO_WAIT) !=
+      TX_SUCCESS) {
+    printf("cdc pool allocate error\r\n");
+    return CDC_POOLERROR;
+  }
 
-    if (tx_thread_create(
-            &CDC_Thread,
-            "CDC Thread",
-            CDC_thread,
-            0,
-            pointer,
-            CDC_APP_STACK_SIZE,
-            CDC_APP_THREAD_PRIO,
-            CDC_APP_THREAD_PREEMPTION_THRESHOLD,
-            CDC_APP_THREAD_TIME_SLICE,
-            CDC_APP_THREAD_AUTO_START))
-    {
-        printf("cdc thread initializing error\r\n");
-        return CDC_THREAD_ERROR;
-    }
+  if (tx_thread_create(
+          &CDC_Thread,
+          "CDC Thread",
+          CDC_thread,
+          0,
+          pointer,
+          CDC_APP_STACK_SIZE,
+          CDC_APP_THREAD_PRIO,
+          CDC_APP_THREAD_PREEMPTION_THRESHOLD,
+          CDC_APP_THREAD_TIME_SLICE,
+          CDC_APP_THREAD_AUTO_START
+      )) {
+    printf("cdc thread initializing error\r\n");
+    return CDC_THREAD_ERROR;
+  }
 
-    return CDC_SUCCSES;
+  return CDC_SUCCSES;
 }
 
-void CDC_thread(ULONG thred_input)
-{
-    while (1)
-    {
-        __enable_irq();
+void CDC_thread(ULONG thred_input) {
+  while (1) {
+    __enable_irq();
 
-        HAL_GPIO_TogglePin(LEDUSB_GPIO_Port, LEDUSB_Pin);
+    HAL_GPIO_TogglePin(LEDUSB_GPIO_Port, LEDUSB_Pin);
 
-        if (Tramsmit_request && tx_cplt)
-        {
-            tx_cplt = false;
+    if (Tramsmit_request && tx_cplt) {
+      tx_cplt = false;
 
-            if (tx_start_point > Buffer_len)
-            {
-            }
-            else
-            {
-            }
+      if (tx_start_point > Buffer_len) {
+      } else {
+      }
 
-            Tramsmit_request = false;
-        }
+      Tramsmit_request = false;
+    }
 
-        tx_thread_sleep(50);
-    };
+    tx_thread_sleep(50);
+  };
 }
 
-int _write(int file, char *ptr, int len)
-{
-    static uint16_t size;
-    static uint16_t rest;
+int _write(int file, char *ptr, int len) {
+  static uint16_t size;
+  static uint16_t rest;
 
-    size = Buffer_len + len;
-    tx_start_point = Buffer_len;
+  size = Buffer_len + len;
+  tx_start_point = Buffer_len;
 
-    if (size > USB_TX_BUFFER_SIZE)
-    {
-        Buffer_len = size - USB_TX_BUFFER_SIZE;
-        rest = USB_TX_BUFFER_SIZE - tx_start_point;
+  if (size > USB_TX_BUFFER_SIZE) {
+    Buffer_len = size - USB_TX_BUFFER_SIZE;
+    rest = USB_TX_BUFFER_SIZE - tx_start_point;
 
-        for (uint16_t i = 0; i < rest; i++)
-        {
-            TX_Buffer[tx_start_point + i] = ptr[i];
-        }
-        for (uint16_t i = 0; i < Buffer_len; i++)
-        {
-            TX_Buffer[i] = ptr[i + rest];
-        }
+    for (uint16_t i = 0; i < rest; i++) {
+      TX_Buffer[tx_start_point + i] = ptr[i];
     }
-    else
-    {
-        for (uint16_t i = 0; i < len; i++)
-        {
-            TX_Buffer[tx_start_point + i] = ptr[i];
-        }
-        Buffer_len += len;
+    for (uint16_t i = 0; i < Buffer_len; i++) {
+      TX_Buffer[i] = ptr[i + rest];
     }
+  } else {
+    for (uint16_t i = 0; i < len; i++) {
+      TX_Buffer[tx_start_point + i] = ptr[i];
+    }
+    Buffer_len += len;
+  }
 
-    Tramsmit_request = true;
+  Tramsmit_request = true;
 
-    return len;
+  return len;
 }
 
-void print_tx_cplt(UART_HandleTypeDef *huart)
-{
-    if (huart == &huart1)
-    {
-        tx_cplt = true;
-    }
+void print_tx_cplt(UART_HandleTypeDef *huart) {
+  if (huart == &huart1) {
+    tx_cplt = true;
+  }
 }
