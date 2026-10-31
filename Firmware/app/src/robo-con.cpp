@@ -52,12 +52,12 @@ __attribute__DTCM__BSS__ TX_THREAD robo_con_Thread;
 
 __attribute__ITCM__ void robo_con_thread(ULONG thred_input);
 
-#define ROBO_CON_APP_STACK_SIZE 256
-#define ROBO_CON_APP_THREAD_PRIO 9
+#define ROBO_CON_APP_STACK_SIZE                  256
+#define ROBO_CON_APP_THREAD_PRIO                 9
 #define ROBO_CON_APP_THREAD_PREEMPTION_THRESHOLD ROBO_CON_APP_THREAD_PRIO
-#define ROBO_CON_APP_THREAD_TIME_SLICE TX_NO_TIME_SLICE
-#define ROBO_CON_APP_THREAD_AUTO_START TX_AUTO_START
-#define ROBO_CON_APP_THREAD_DONT_START TX_DONT_START
+#define ROBO_CON_APP_THREAD_TIME_SLICE           TX_NO_TIME_SLICE
+#define ROBO_CON_APP_THREAD_AUTO_START           TX_AUTO_START
+#define ROBO_CON_APP_THREAD_DONT_START           TX_DONT_START
 
 /***
  * rx_buffer_pool_memory
@@ -134,11 +134,11 @@ void robo_con_thread(ULONG thred_input) {
 }
 
 void update_joystick(joystick_state_t &hjoystick) {
-  hjoystick.LX = (uint8_t)ADC1_Buffer[2];
-  hjoystick.LY = (uint8_t)ADC1_Buffer[1];
+  hjoystick.LX     = (uint8_t)ADC1_Buffer[2];
+  hjoystick.LY     = (uint8_t)ADC1_Buffer[1];
   hjoystick.L_Push = HAL_GPIO_ReadPin(LP_STICK_GPIO_Port, LP_STICK_Pin);
-  hjoystick.RX = (uint8_t)ADC2_Buffer[1];
-  hjoystick.RY = (uint8_t)ADC2_Buffer[0];
+  hjoystick.RX     = (uint8_t)ADC2_Buffer[1];
+  hjoystick.RY     = (uint8_t)ADC2_Buffer[0];
   hjoystick.R_Push = HAL_GPIO_ReadPin(RP_STICK_GPIO_Port, RP_STICK_Pin);
 }
 
@@ -146,7 +146,7 @@ void update_LiPo_State(LiPo_state_e &hLiPo) {
   static float voltage;
   voltage = (float)ADC1_Buffer[0] / 255.0f * 6.6f;
   if (voltage >= 4.0f) {
-    hLiPo = FULL;
+    hLiPo           = FULL;
     LiPo_Toggle_LED = false;
     HAL_GPIO_WritePin(LEDLiPo_GPIO_Port, LEDLiPo_Pin, GPIO_PIN_RESET);
   } else if (voltage <= 3.8f) {
@@ -154,7 +154,7 @@ void update_LiPo_State(LiPo_state_e &hLiPo) {
     HAL_GPIO_WritePin(LEDLiPo_GPIO_Port, LEDLiPo_Pin, GPIO_PIN_SET);
     LiPo_Toggle_LED = false;
   } else {
-    hLiPo = LITTLE;
+    hLiPo           = LITTLE;
     LiPo_Toggle_LED = true;
   }
 }
@@ -216,5 +216,7 @@ void tim_lib(TIM_HandleTypeDef *htim) {
   }
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) { print_tx_cplt(huart); }
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
+  print_tx_cplt(huart);
+}
 }

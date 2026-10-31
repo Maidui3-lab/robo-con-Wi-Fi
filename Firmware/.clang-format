@@ -1,6 +1,8 @@
 BasedOnStyle: LLVM
 
 ColumnLimit: 100
+IndentWidth: 2
+AccessModifierOffset: -4
 BreakStringLiterals: false
 
 AlignAfterOpenBracket: BlockIndent
@@ -9,4 +11,7 @@ BinPackArguments:      false
 
 AlignConsecutiveMacros: Consecutive
 AlignArrayOfStructures: Right
+AlignConsecutiveBitFields: Consecutive
 AlignConsecutiveAssignments: true
+
+AllowShortFunctionsOnASingleLine: Empty
