@@ -13,6 +13,7 @@ __attribute__RAM_D1__BSS__ uint8_t TX_Buffer[USB_TX_BUFFER_SIZE];
 __attribute__DTCM__BSS__ uint8_t RX_Buffer[2048];
 __attribute__DTCM__BSS__ uint16_t Buffer_len;
 __attribute__DTCM__BSS__ uint16_t tx_start_point;
+__attribute__DTCM__BSS__ uint16_t rest;
 __attribute__DTCM__BSS__ bool Tramsmit_request;
 __attribute__DTCM__BSS__ bool tx_cplt;
 
@@ -20,15 +21,15 @@ __attribute__DTCM__ TX_THREAD CDC_Thread;
 
 __attribute__ITCM__ void CDC_thread(ULONG thred_input);
 
-#define CDC_APP_STACK_SIZE 512
-#define CDC_APP_THREAD_PRIO 10
+#define CDC_APP_STACK_SIZE                  512
+#define CDC_APP_THREAD_PRIO                 10
 #define CDC_APP_THREAD_PREEMPTION_THRESHOLD CDC_APP_THREAD_PRIO
-#define CDC_APP_THREAD_TIME_SLICE TX_NO_TIME_SLICE
-#define CDC_APP_THREAD_AUTO_START TX_AUTO_START
-#define CDC_APP_THREAD_DONT_START TX_DONT_START
+#define CDC_APP_THREAD_TIME_SLICE           TX_NO_TIME_SLICE
+#define CDC_APP_THREAD_AUTO_START           TX_AUTO_START
+#define CDC_APP_THREAD_DONT_START           TX_DONT_START
 
 #define CDC_MAX_TRANSPORT_SIZE 512
-#define CDC_TRANSPORT_SPEED 115200
+#define CDC_TRANSPORT_SPEED    115200
 
 UINT cdc_init(VOID *memory_ptr) {
   TX_BYTE_POOL *byte_pool = (TX_BYTE_POOL *)memory_ptr;
@@ -67,13 +68,17 @@ void CDC_thread(ULONG thred_input) {
     HAL_GPIO_TogglePin(LEDUSB_GPIO_Port, LEDUSB_Pin);
 
     if (Tramsmit_request && tx_cplt) {
-      tx_cplt = false;
 
       if (tx_start_point > Buffer_len) {
+        HAL_UART_Transmit_DMA(&huart1, &TX_Buffer[tx_start_point], rest);
+        tx_start_point = 0;
+        tx_cplt        = false;
       } else {
+        HAL_UART_Transmit_DMA(&huart1, &TX_Buffer[tx_start_point], Buffer_len);
+        tx_start_point   = Buffer_len;
+        tx_cplt          = false;
+        Tramsmit_request = false;
       }
-
-      Tramsmit_request = false;
     }
 
     tx_thread_sleep(50);
@@ -82,14 +87,13 @@ void CDC_thread(ULONG thred_input) {
 
 int _write(int file, char *ptr, int len) {
   static uint16_t size;
-  static uint16_t rest;
 
-  size = Buffer_len + len;
+  size           = Buffer_len + len;
   tx_start_point = Buffer_len;
 
   if (size > USB_TX_BUFFER_SIZE) {
     Buffer_len = size - USB_TX_BUFFER_SIZE;
-    rest = USB_TX_BUFFER_SIZE - tx_start_point;
+    rest       = USB_TX_BUFFER_SIZE - tx_start_point;
 
     for (uint16_t i = 0; i < rest; i++) {
       TX_Buffer[tx_start_point + i] = ptr[i];

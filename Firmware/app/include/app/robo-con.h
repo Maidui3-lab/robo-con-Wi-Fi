@@ -25,17 +25,17 @@ extern "C" {
 #define __at_section(section) __attribute__((__section__(section)))
 
 #ifdef USE_SECTION
-#define __attribute__DTCM__         __at_section(".data")
-#define __attribute__DTCM__BSS__    __at_section(".bss")
-#define __attribute__RAM_D1__       __at_section(".data_ram1")
-#define __attribute__RAM_D1__BSS__  __at_section(".bss_ram1")
-#define __attribute__RAM_D2__       __at_section(".data_ram2")
-#define __attribute__RAM_D2__BSS__  __at_section(".bss_ram2")
-#define __attribute__RAM_D3__       __at_section(".data_ram3")
-#define __attribute__RAM_D3__BSS__  __at_section(".bss_ram3")
-#define __attribute__FLASH__        __at_section(".flash")
-#define __attribute__ITCM__         __at_section(".itcm")
-#define __attribute__RAM_BackUp__   __at_section(".data_backup")
+#define __attribute__DTCM__        __at_section(".data")
+#define __attribute__DTCM__BSS__   __at_section(".bss")
+#define __attribute__RAM_D1__      __at_section(".data_ram1")
+#define __attribute__RAM_D1__BSS__ __at_section(".bss_ram1")
+#define __attribute__RAM_D2__      __at_section(".data_ram2")
+#define __attribute__RAM_D2__BSS__ __at_section(".bss_ram2")
+#define __attribute__RAM_D3__      __at_section(".data_ram3")
+#define __attribute__RAM_D3__BSS__ __at_section(".bss_ram3")
+#define __attribute__FLASH__       __at_section(".flash")
+#define __attribute__ITCM__        __at_section(".itcm")
+#define __attribute__RAM_BackUp__  __at_section(".data_backup")
 #else
 #define __attribute__DTCM__
 #define __attribute__DTCM__BSS__
@@ -50,8 +50,8 @@ extern "C" {
 #define __attribute__RAM_BackUp__
 #endif
 
-__attribute__ITCM__ void tim_lib(TIM_HandleTypeDef* htim);
-__attribute__FLASH__ UINT robo_con_init(VOID* memory_ptr);
+__attribute__ITCM__ void tim_lib(TIM_HandleTypeDef *htim);
+__attribute__FLASH__ UINT robo_con_init(VOID *memory_ptr);
 __attribute__FLASH__ void mcu_wake_led();
 
 #define ROBO_CON_SUCCSES      0U

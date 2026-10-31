@@ -6,3 +6,7 @@ BreakStringLiterals: false
 AlignAfterOpenBracket: BlockIndent
 BinPackParameters:     false
 BinPackArguments:      false
+
+AlignConsecutiveMacros: Consecutive
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments: true

@@ -14,20 +14,19 @@
 __attribute__FLASH__ UINT cdc_init(VOID *memory_ptr);
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-    __attribute__ITCM__ int _write(int file, char *ptr, int len);
-    void print_tx_cplt(UART_HandleTypeDef *huart);
+__attribute__ITCM__ int _write(int file, char *ptr, int len);
+void print_tx_cplt(UART_HandleTypeDef *huart);
 
 #ifdef __cplusplus
 }
 #endif
 
-#define CDC_SUCCSES 0
-#define CDC_POOLERROR 1
-#define CDC_THREAD_ERROR 2
+#define CDC_SUCCSES       0
+#define CDC_POOLERROR     1
+#define CDC_THREAD_ERROR  2
 #define CDC_UX_INIT_ERROR 3
 
 #endif
