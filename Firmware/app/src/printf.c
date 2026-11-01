@@ -107,6 +107,7 @@ int _write(int file, char *ptr, int len) {
     }
     Buffer_len += len;
   }
+  Buffer_len += 1;
 
   Tramsmit_request = true;
 

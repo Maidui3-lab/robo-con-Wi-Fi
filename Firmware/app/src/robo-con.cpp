@@ -123,11 +123,16 @@ void robo_con_thread(ULONG thred_input) {
     update_button(button);
     update_button_f(button_f);
 
+    /*ADCチェック用*/
     printf("LIPO -> %d : ", ADC1_Buffer[0]);
     printf("LY -> %d : ", ADC1_Buffer[1]);
     printf("LX -> %d : ", ADC1_Buffer[2]);
     printf("RY -> %d : ", ADC2_Buffer[0]);
     printf("RX -> %d\r\n", ADC2_Buffer[1]);
+
+    /*送信 BEGIN*/
+
+    /*送信 END*/
 
     tx_thread_sleep(1);
   }
