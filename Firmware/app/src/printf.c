@@ -8,7 +8,10 @@
 //
 #include "app/robo-con.h"
 
-#define USB_TX_BUFFER_SIZE 1024U * 8U
+#define CDC_MAX_TRANSPORT_SIZE 512
+#define CDC_TRANSPORT_SPEED    115200
+
+#define USB_TX_BUFFER_SIZE CDC_MAX_TRANSPORT_SIZE * 16U
 __attribute__RAM_D1__BSS__ uint8_t TX_Buffer[USB_TX_BUFFER_SIZE];
 __attribute__DTCM__BSS__ uint8_t RX_Buffer[2048];
 __attribute__DTCM__BSS__ uint16_t Buffer_len;
@@ -27,9 +30,6 @@ __attribute__ITCM__ void CDC_thread(ULONG thred_input);
 #define CDC_APP_THREAD_TIME_SLICE           TX_NO_TIME_SLICE
 #define CDC_APP_THREAD_AUTO_START           TX_AUTO_START
 #define CDC_APP_THREAD_DONT_START           TX_DONT_START
-
-#define CDC_MAX_TRANSPORT_SIZE 512
-#define CDC_TRANSPORT_SPEED    115200
 
 UINT cdc_init(VOID *memory_ptr) {
   TX_BYTE_POOL *byte_pool = (TX_BYTE_POOL *)memory_ptr;
