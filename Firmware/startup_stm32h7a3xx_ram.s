@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file      startup_stm32h723xx_ram.s
+  * @file      startup_stm32h7a3xx_ram.s
   * @author    maidui3
   * @brief     STM32H723xx Devices vector table for GCC based toolchain.
   *            This module performs:
