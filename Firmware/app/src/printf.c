@@ -9,7 +9,6 @@
 #include "app/robo-con.h"
 
 #define CDC_MAX_TRANSPORT_SIZE 512
-#define CDC_TRANSPORT_SPEED    115200
 
 #define USB_TX_BUFFER_SIZE CDC_MAX_TRANSPORT_SIZE * 16U
 __attribute__RAM_D1__BSS__ uint8_t TX_Buffer[USB_TX_BUFFER_SIZE];
@@ -19,6 +18,8 @@ __attribute__DTCM__BSS__ uint16_t tx_start_point;
 __attribute__DTCM__BSS__ uint16_t rest;
 __attribute__DTCM__BSS__ bool Tramsmit_request;
 __attribute__DTCM__BSS__ bool tx_cplt;
+
+__attribute__RAM_D1__BSS__ uint8_t ex_tx[] = "SETUP CDC Thread";
 
 __attribute__DTCM__ TX_THREAD CDC_Thread;
 
@@ -57,6 +58,8 @@ UINT cdc_init(VOID *memory_ptr) {
     printf("cdc thread initializing error\r\n");
     return CDC_THREAD_ERROR;
   }
+
+  HAL_UART_Transmit_DMA(&huart1, ex_tx, sizeof(ex_tx));
 
   return CDC_SUCCSES;
 }

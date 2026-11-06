@@ -11,6 +11,8 @@
 #include "app_azure_rtos_config.h"
 #include "tx_api.h"
 
+#define CDC_TRANSPORT_SPEED 9600
+
 __attribute__FLASH__ UINT cdc_init(VOID *memory_ptr);
 
 #ifdef __cplusplus

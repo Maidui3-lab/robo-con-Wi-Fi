@@ -111,9 +111,7 @@ int main(void) {
   MX_TIM6_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
-  // while (1) {
-  // };
+
   /* USER CODE END 2 */
 
   MX_ThreadX_Init();
