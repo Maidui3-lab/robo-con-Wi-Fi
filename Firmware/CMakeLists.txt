@@ -19,7 +19,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Set the project name
-set(CMAKE_PROJECT_NAME robo-con-Wi-Fi-v2)
+set(CMAKE_PROJECT_NAME robo-con-Wi-Fi)
 
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -67,4 +67,10 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     robo-con
 
     # Add user defined libraries
+)
+
+add_custom_command(TARGET robo-con-Wi-Fi POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O ihex 
+            $<TARGET_FILE:robo-con-Wi-Fi>
+            ${CMAKE_CURRENT_BINARY_DIR}/robo-con-Wi-Fi.hex
 )
