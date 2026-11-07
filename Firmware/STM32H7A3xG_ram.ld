@@ -171,10 +171,12 @@ SECTIONS
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
     . = ALIGN(4);
+    PROVIDE(__data_end = .);
   } >DTCMRAM AT> FLASH
 
   .tdata : ALIGN(4)
   {
+    PROVIDE(__tdata_start = .);
     *(.tdata .tdata.* .gnu.linkonce.td.*)
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
@@ -185,10 +187,12 @@ SECTIONS
     _sbss = .;
     *(.tbss .tbss.*)
     . = ALIGN(4);
+    PROVIDE(__tbss_end = .);
   } >DTCMRAM
 
   .bss (NOLOAD) : ALIGN(4)
   {
+    PROVIDE(__bss_start = .);
     *(.bss)
     *(.bss*)
     *(COMMON)
@@ -203,14 +207,16 @@ SECTIONS
   {
     . = ALIGN(4);
     _sdata_ram1 = .;
-    *(.data_ram1)
-    *(.data_ram1*)
+    *(.ram1_data)
+    *(.ram1_data*)
     . = ALIGN(4);
+    PROVIDE(__ram1_data_end = .);
   } >RAM_D1 AT> FLASH
 
   .tdata_ram1 : ALIGN(4)
   {
-    *(.tdata_ram1 .tdata_ram1.* .gnu.linkonce.td.*)
+    PROVIDE(__ram1_tdata_start = .);
+    *(.ram1_tdata .ram1_tdata.* .gnu.linkonce.td.*)
     . = ALIGN(4);
     _edata_ram1 = .;
   } >RAM_D1 AT> FLASH
@@ -218,14 +224,16 @@ SECTIONS
   .tbss_ram1 (NOLOAD) : ALIGN(4)
   {
     _sbss_ram1 = .;
-    *(.tbss_ram1 .tbss_ram1.*)
+    *(.ram1_tbss .ram1_tbss.*)
     . = ALIGN(4);
+    PROVIDE(__ram1_tbss_end = .);
   } >RAM_D1
 
   .bss_ram1 (NOLOAD) : ALIGN(4)
   {
-    *(.bss_ram1)
-    *(.bss_ram1*)
+    PROVIDE(__ram1_bss_start = .);
+    *(.ram1_bss)
+    *(.ram1_bss*)
     . = ALIGN(4);
     _ebss_ram1 = .;
   } >RAM_D1
@@ -237,14 +245,16 @@ SECTIONS
   {
     . = ALIGN(4);
     _sdata_ram2 = .;
-    *(.data_ram2)
-    *(.data_ram2*)
+    *(.ram2_data)
+    *(.ram2_data*)
     . = ALIGN(4);
+    PROVIDE(__ram2_data_end = .);
   } >RAM_D2 AT> FLASH
 
   .tdata_ram2 : ALIGN(4)
   {
-    *(.tdata_ram2 .tdata_ram2.* .gnu.linkonce.td.*)
+    PROVIDE(__ram2_tdata_start = .);
+    *(.ram2_tdata .ram2_tdata.* .gnu.linkonce.td.*)
     . = ALIGN(4);
     _edata_ram2 = .;
   } >RAM_D2 AT> FLASH
@@ -252,14 +262,16 @@ SECTIONS
   .tbss_ram2 (NOLOAD) : ALIGN(4)
   {
     _sbss_ram2 = .;
-    *(.tbss_ram2 .tbss_ram2.*)
+    *(.ram2_tbss .ram2_tbss.*)
     . = ALIGN(4);
+    PROVIDE(__ram2_tbss_end = .);
   } >RAM_D2
 
   .bss_ram2 (NOLOAD) : ALIGN(4)
   {
-    *(.bss_ram2)
-    *(.bss_ram2*)
+    PROVIDE(__ram2_bss_start = .);
+    *(.ram2_bss)
+    *(.ram2_bss*)
     . = ALIGN(4);
     _ebss_ram2 = .;
   } >RAM_D2
@@ -271,14 +283,16 @@ SECTIONS
   {
     . = ALIGN(4);
     _sdata_ram3 = .;
-    *(.data_ram3)
-    *(.data_ram3*)
+    *(.ram3_data)
+    *(.ram3_data*)
     . = ALIGN(4);
+    PROVIDE(__ram3_data_end = .);
   } >RAM_D3 AT> FLASH
 
   .tdata_ram3 : ALIGN(4)
   {
-    *(.tdata_ram3 .tdata_ram3.* .gnu.linkonce.td.*)
+    PROVIDE(__ram3_tdata_start = .);
+    *(.ram3_tdata .ram3_tdata.* .gnu.linkonce.td.*)
     . = ALIGN(4);
     _edata_ram3 = .;
   } >RAM_D3 AT> FLASH
@@ -286,14 +300,16 @@ SECTIONS
   .tbss_ram3 (NOLOAD) : ALIGN(4)
   {
     _sbss_ram3 = .;
-    *(.tbss_ram3 .tbss_ram3.*)
+    *(.ram3_tbss .ram3_tbss.*)
     . = ALIGN(4);
+    PROVIDE(__ram3_tbss_end = .);
   } >RAM_D3
 
   .bss_ram3 (NOLOAD) : ALIGN(4)
   {
-    *(.bss_ram3)
-    *(.bss_ram3*)
+    PROVIDE(__ram3_bss_start = .);
+    *(.ram3_bss)
+    *(.ram3_bss*)
     . = ALIGN(4);
     _ebss_ram3 = .;
   } >RAM_D3
