@@ -55,21 +55,26 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
+/*---------------------------------------- text_flash END ----------------------------------------*/
 
-  .flash :
+
+/*---------------------------------------- text BEGIN ----------------------------------------*/
+  .text :
   {
     . = ALIGN(4);
+    *(.text)           /* .text sections (code) */
+    *(.text*)          /* .text* sections (code) */
+    *(.glue_7)         /* glue arm to thumb code */
+    *(.glue_7t)        /* glue thumb to arm code */
+    *(.eh_frame)
 
-    *(.flash)
-    *(.flash*)
-
-    KEEP(*(.init))
-    KEEP(*(.fini))
+    KEEP (*(.init))
+    KEEP (*(.fini))
 
     . = ALIGN(4);
-    _eflash = .;
+    _etext = .;        /* define a global symbols at end of code */
   } >FLASH
-/*---------------------------------------- text_flash END ----------------------------------------*/
+/*---------------------------------------- text END ----------------------------------------*/
 
 /*---------------------------------------- itcm BEGIN ----------------------------------------*/
   _siitcm = LOADADDR(.itcm);
@@ -83,25 +88,6 @@ SECTIONS
     _eitcm = .;
   } >ITCMRAM AT> FLASH
 /*---------------------------------------- itcm END ----------------------------------------*/
-
-/*---------------------------------------- text BEGIN ----------------------------------------*/
-  _sitext = LOADADDR(.text);
-  .text :
-  {
-    . = ALIGN(4);
-    _stext = .;
-
-    *(.text)           /* .text sections (code) */
-    *(.text*)          /* .text* sections (code) */
-    *(.glue_7)         /* glue arm to thumb code */
-    *(.glue_7t)        /* glue thumb to arm code */
-    *(.eh_frame)
-
-    . = ALIGN(4);
-    _etext = .;        /* define a global symbols at end of code */
-  } >RAM_D1 AT> FLASH
-/*---------------------------------------- text END ----------------------------------------*/
-
 
 /*---------------------------------------- rodata BEGIN ----------------------------------------*/
   .rodata :
