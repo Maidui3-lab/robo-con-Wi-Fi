@@ -73,8 +73,8 @@ UINT robo_con_init(VOID *memory_ptr) {
 
   HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
   HAL_ADCEx_Calibration_Start(&hadc2, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC1_Buffer, sizeof(ADC1_Buffer[0]));
-  HAL_ADC_Start_DMA(&hadc2, (uint32_t *)ADC2_Buffer, sizeof(ADC2_Buffer[0]));
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC1_Buffer, sizeof(ADC1_Buffer) / sizeof(ADC1_Buffer[0]));
+  HAL_ADC_Start_DMA(&hadc2, (uint32_t *)ADC2_Buffer, sizeof(ADC2_Buffer) / sizeof(ADC2_Buffer[0]));
 
   if (tx_byte_allocate(byte_pool, (VOID **)&pointer, ROBO_CON_APP_STACK_SIZE, TX_NO_WAIT) !=
       TX_SUCCESS) {
@@ -116,11 +116,11 @@ void robo_con_thread(ULONG thred_input) {
       HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
 
       /*ADCチェック用*/
-      printf("LIPO -> %d : ", ADC1_Buffer[0]);
-      printf("LY -> %d : ", ADC1_Buffer[1]);
-      printf("LX -> %d : ", ADC1_Buffer[2]);
-      printf("RY -> %d : ", ADC2_Buffer[0]);
-      printf("RX -> %d\r\n", ADC2_Buffer[1]);
+      //printf("LIPO -> %d : ", ADC1_Buffer[0]);
+      //printf("LY -> %d : ", ADC1_Buffer[1]);
+      //printf("LX -> %d : ", ADC1_Buffer[2]);
+      //printf("RY -> %d : ", ADC2_Buffer[0]);
+      //printf("RX -> %d\r\n", ADC2_Buffer[1]);
 
       tick_count = 0;
     }
