@@ -42,6 +42,7 @@ defined in linker script */
 /*data section END*/
 /*text section BEGIN*/
 .word  _siitcm
+.word  _sitext
 /*text section END*/
 
 
@@ -54,6 +55,7 @@ defined in linker script */
 /*data section END*/
 /*text section BEGIN*/
 .word  _sitcm
+.word  _stext
 /*text section END*/
 
 
@@ -66,6 +68,7 @@ defined in linker script */
 /*data section END*/
 /*text section BEGIN*/
 .word  _eitcm
+.word  _etext
 /*text section END*/
 
 
@@ -98,7 +101,7 @@ defined in linker script */
  * @retval : None
 */
 
-    .section  .text.Reset_Handler
+    .section  .flash.Reset_Handler
   .weak  Reset_Handler
   .type  Reset_Handler, %function
 Reset_Handler:
@@ -148,11 +151,16 @@ LoopCopyData:
   movs r3, #0
   bl LoopCopyDataInit
 /*data section END*/
-
 /*text section BEGIN*/
   ldr r0, =_sitcm
   ldr r1, =_eitcm
   ldr r2, =_siitcm
+  movs r3, #0
+  bl LoopCopyDataInit
+  
+  ldr r0, =_stext
+  ldr r1, =_etext
+  ldr r2, =_sitext
   movs r3, #0
   bl LoopCopyDataInit
 /*text section END*/
@@ -189,13 +197,13 @@ LoopFillZero:
 /*bss section END*/
 
 /* Call static constructors */
-    bl __libc_init_array
-    //ldr r0, =__libc_init_array
-    //blx r0
+    #bl __libc_init_array
+    ldr r0, =__libc_init_array
+    blx r0
 /* Call the application's entry point.*/
-    bl  main
-    //ldr r0, =main
-    //blx r0
+    #bl  main
+    ldr r0, =main
+    blx r0
 LoopForever:
     b LoopForever
 
@@ -208,7 +216,7 @@ LoopForever:
  * @param  None
  * @retval None
 */
-    .section  .text.Default_Handler,"ax",%progbits
+    .section  .flash.Default_Handler,"ax",%progbits
 Default_Handler:
 Infinite_Loop:
   b  Infinite_Loop

@@ -49,6 +49,14 @@
 
 /* USER CODE BEGIN PV */
 
+__attribute__RAM_D2__BSS__ uint16_t ADC1_Buffer_[3];
+// IN3  LiPo
+// IN18 RY
+// IN19 RX
+__attribute__RAM_D2__BSS__ uint16_t ADC2_Buffer_[2];
+// IN10 LY
+// IN11 LX
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -111,7 +119,24 @@ int main(void) {
   MX_TIM6_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
+  HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
+  HAL_ADCEx_Calibration_Start(&hadc2, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC1_Buffer_, sizeof(ADC1_Buffer_[0]));
+  HAL_ADC_Start_DMA(&hadc2, (uint32_t *)ADC2_Buffer_, sizeof(ADC2_Buffer_[0]));
 
+  while(1){
+    if(ADC1_Buffer_[1] >= 200){
+      HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+    }else{
+      HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+    }
+    
+    if(ADC1_Buffer_[0] >= 200){
+      HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+    }else{
+      HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+    }
+  };
   /* USER CODE END 2 */
 
   MX_ThreadX_Init();
