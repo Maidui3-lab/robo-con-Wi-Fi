@@ -227,6 +227,7 @@ void tim_lib(TIM_HandleTypeDef *htim) {
       HAL_GPIO_TogglePin(LEDLiPo_GPIO_Port, LEDLiPo_Pin);
     }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    print_tim_nvic_100ms();
   }
 
   // 100Hz

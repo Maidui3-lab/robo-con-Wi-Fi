@@ -20,7 +20,8 @@ extern "C" {
 #endif
 
 __attribute__ITCM__ int _write(int file, char *ptr, int len);
-void print_tx_cplt(UART_HandleTypeDef *huart);
+__attribute__ITCM__ void print_tx_cplt(UART_HandleTypeDef *huart);
+__attribute__ITCM__ void print_tim_nvic_100ms();
 
 #ifdef __cplusplus
 }
