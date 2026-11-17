@@ -56,7 +56,7 @@
 
 #define CY_RSLT_ERROR            ((cy_rslt_t)-1)
 
-#define DEFAULT_PRIORITY         20
+#define DEFAULT_PRIORITY         11
 #define DEFAULT_MEMORY_SIZE      1024
 #define ARP_MEMORY_SIZE          DEFAULT_MEMORY_SIZE
 
@@ -176,22 +176,22 @@ UINT MX_NetXDuo_Init(VOID *memory_ptr)
   /* USER CODE BEGIN MX_NetXDuo_Init */
 
     /* Allocate the main thread pool. */
-    //ret = tx_byte_allocate(byte_pool, (VOID**)&pointer, 2 * DEFAULT_MEMORY_SIZE, TX_NO_WAIT);
-    //
-    //if (ret != TX_SUCCESS)
-    //{
-    //    return NX_NOT_ENABLED;
-    //}
-//
-    ///* Create the main thread */
-    //ret = tx_thread_create(&AppMainThread, "App Main thread", application_start, 0, pointer,
-    //                       2 * DEFAULT_MEMORY_SIZE,
-    //                       DEFAULT_PRIORITY, DEFAULT_PRIORITY, TX_NO_TIME_SLICE, TX_AUTO_START);
-//
-    //if (ret != TX_SUCCESS)
-    //{
-    //    return NX_NOT_ENABLED;
-    //}
+    ret = tx_byte_allocate(byte_pool, (VOID**)&pointer, 2 * DEFAULT_MEMORY_SIZE, TX_NO_WAIT);
+    
+    if (ret != TX_SUCCESS)
+    {
+        return NX_NOT_ENABLED;
+    }
+
+    /* Create the main thread */
+    ret = tx_thread_create(&AppMainThread, "App Main thread", application_start, 0, pointer,
+                           2 * DEFAULT_MEMORY_SIZE,
+                           DEFAULT_PRIORITY, DEFAULT_PRIORITY, TX_NO_TIME_SLICE, TX_AUTO_START);
+
+    if (ret != TX_SUCCESS)
+    {
+        return NX_NOT_ENABLED;
+    }
 
   /* USER CODE END MX_NetXDuo_Init */
 
@@ -207,12 +207,16 @@ void application_start(ULONG id)
 
     config.interface = CY_WCM_INTERFACE_TYPE_STA;
     cy_wcm_scan_filter_t scan_filter;
+    printf("in wcm init\n");
     result = cy_wcm_init(&config);
+    printf("out wcm init\n");
 
     if (result != CY_RSLT_SUCCESS)
     {
         printf("Error initializing WCM\n");
         return;
+    }else{
+        printf("Success initializing WCM\n");
     }
     scan_filter.mode = CY_WCM_SCAN_FILTER_TYPE_SSID;
     memcpy(scan_filter.param.SSID, WIFI_SSID, strlen(WIFI_SSID) + 1);

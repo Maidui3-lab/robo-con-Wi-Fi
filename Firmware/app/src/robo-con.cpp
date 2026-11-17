@@ -120,28 +120,24 @@ UINT robo_con_init(VOID *memory_ptr) {
 
 // #define CHECK_ADC
 void robo_con_thread(ULONG thred_input) {
-#ifdef CHECK_ADC
   static uint8_t tick_count;
-#endif
 
   while (1) {
     __enable_irq();
 
-#ifdef CHECK_ADC
     if (tick_count >= 50) {
       HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-
+#ifdef CHECK_ADC
       /*ADCチェック用*/
       printf("LIPO -> %d : ", ADC1_Buffer[0]);
       printf("RY -> %d : ", ADC1_Buffer[1]);
       printf("RX -> %d : ", ADC1_Buffer[2]);
       printf("LY -> %d : ", ADC2_Buffer[0]);
       printf("LX -> %d\r\n", ADC2_Buffer[1]);
-
+#endif
       tick_count = 0;
     }
     tick_count++;
-#endif
 
     update_joystick(joystick);
     update_LiPo_State(LiPo_State);
