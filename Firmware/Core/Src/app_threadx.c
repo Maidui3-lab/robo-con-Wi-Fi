@@ -47,8 +47,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 TX_THREAD tx_app_thread;
-TX_SEMAPHORE tx_app_semaphore;
-TX_MUTEX tx_app_mutex;
 TX_QUEUE tx_app_msg_queue;
 /* USER CODE BEGIN PV */
 
@@ -97,18 +95,6 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
                       pointer, TX_APP_MSG_QUEUE_FULL_SIZE * sizeof(ULONG)) != TX_SUCCESS)
   {
     return TX_QUEUE_ERROR;
-  }
-
-  /* Create tx app semaphore.  */
-  if (tx_semaphore_create(&tx_app_semaphore, "tx app semaphore", 0) != TX_SUCCESS)
-  {
-    return TX_SEMAPHORE_ERROR;
-  }
-
-  /* Create tx app mutex.  */
-  if (tx_mutex_create(&tx_app_mutex, "tx app mutex", TX_NO_INHERIT) != TX_SUCCESS)
-  {
-    return TX_MUTEX_ERROR;
   }
 
   /* USER CODE BEGIN App_ThreadX_Init */

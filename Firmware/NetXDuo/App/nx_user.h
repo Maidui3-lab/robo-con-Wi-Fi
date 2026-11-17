@@ -290,9 +290,7 @@
 */
 
 /* Defined, this option disables the addition size checking on received packets. */
-/*
 #define NX_DISABLE_RX_SIZE_CHECKING
-*/
 
 /* The symbol "NX_IP_PERIODIC_RATE" specifies the number of ThreadX timer ticks in one second.
    The value should be derived from TX_TIMER_TICKS_PER_SECOND, which is defined in ThreadX port.
