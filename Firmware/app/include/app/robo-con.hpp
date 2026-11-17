@@ -15,9 +15,10 @@
 #include "app/robo-con_typedf.hpp"
 #include "stdint.h"
 
-__attribute__ITCM__ void update_joystick(joystick_state_t& hjoystick);
-__attribute__ITCM__ void update_LiPo_State(LiPo_state_e& hLiPo);
-__attribute__ITCM__ void update_button(button_state_t& hbutton);
-__attribute__ITCM__ void update_button_f(up_senter_side_button_t& hbutton_f);
+__attribute__ITCM__ void update_joystick(joystick_state_t &hjoystick);
+__attribute__ITCM__ void update_LiPo_State(LiPo_state_e &hLiPo);
+__attribute__ITCM__ void update_button(button_state_t &hbutton);
+__attribute__ITCM__ void update_button_f(up_senter_side_button_t &hbutton_f);
 
-__attribute__ITCM__ void update_ThreadX_info();
+__attribute__ITCM__ void update_ThreadX_info(TX_THREAD *Thread);
+__attribute__ITCM__ CHAR *Thread_state(UINT state);

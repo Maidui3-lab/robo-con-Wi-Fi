@@ -219,17 +219,31 @@ void mcu_wake_led() {
   HAL_GPIO_WritePin(LEDUSB_GPIO_Port, LEDUSB_Pin, GPIO_PIN_SET);
 }
 
-void update_ThreadX_info(){
+void update_ThreadX_info(TX_THREAD *Thread) {
+  UINT state;
+  ULONG run_count;
+  CHAR *name;
+  printf("----info----\n");
+  tx_thread_info_get(Thread, &name, &state, &run_count, NULL, NULL, NULL, NULL, NULL);
+  printf("state ->%s\n", Thread_state(state));
+  printf("name  ->%s\n", name);
+  printf("count ->%d\n", (int)run_count);
 }
 
 extern "C" {
 void tim_lib(TIM_HandleTypeDef *htim) {
+  static uint8_t counter_1Hz;
   // 10Hz
   if (htim == &htim6) {
     if (LiPo_Toggle_LED) {
       HAL_GPIO_TogglePin(LEDLiPo_GPIO_Port, LEDLiPo_Pin);
     }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    if (counter_1Hz >= 10) {
+      // update_ThreadX_info(&robo_con_Thread);
+      counter_1Hz = 0;
+    }
+    counter_1Hz++;
     print_tim_nvic_100ms();
   }
 
@@ -242,4 +256,55 @@ void tim_lib(TIM_HandleTypeDef *htim) {
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
   print_tx_cplt(huart);
 }
+}
+
+CHAR *Thread_state(UINT state) {
+  switch (state) {
+
+  case TX_READY:
+    return (CHAR *)("TX_READY");
+
+  case TX_COMPLETED:
+    return (CHAR *)("TX_COMPLETED");
+
+  case TX_TERMINATED:
+    return (CHAR *)("TX_TERMINATED");
+
+  case TX_SUSPENDED:
+    return (CHAR *)("TX_SUSPENDED");
+
+  case TX_SLEEP:
+    return (CHAR *)("TX_SLEEP");
+
+  case TX_QUEUE_SUSP:
+    return (CHAR *)("TX_QUEUE_SUSP");
+
+  case TX_SEMAPHORE_SUSP:
+    return (CHAR *)("TX_SEMAPHORE_SUSP");
+
+  case TX_EVENT_FLAG:
+    return (CHAR *)("TX_EVENT_FLAG");
+
+  case TX_BLOCK_MEMORY:
+    return (CHAR *)("TX_BLOCK_MEMORY");
+
+  case TX_BYTE_MEMORY:
+    return (CHAR *)("TX_BYTE_MEMORY");
+
+  case TX_IO_DRIVER:
+    return (CHAR *)("TX_IO_DRIVER");
+
+  case TX_FILE:
+    return (CHAR *)("TX_FILE");
+
+  case TX_TCP_IP:
+    return (CHAR *)("TX_TCP_IP");
+
+  case TX_MUTEX_SUSP:
+    return (CHAR *)("TX_MUTEX_SUSP");
+
+  case TX_PRIORITY_CHANGE:
+    return (CHAR *)("TX_PRIORITY_CHANGE");
+  }
+  return (CHAR *)("UNKNOWN");
 }

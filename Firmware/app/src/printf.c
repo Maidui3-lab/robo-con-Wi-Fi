@@ -8,7 +8,7 @@
 //
 #include "app/robo-con.h"
 
-//#define PACKET_TRANSMIT_PROGRAM_BY_THREAD_ENABLE
+// #define PACKET_TRANSMIT_PROGRAM_BY_THREAD_ENABLE
 
 #define CDC_MAX_TRANSPORT_SIZE 512
 
@@ -37,7 +37,7 @@ __attribute__ITCM__ void CDC_thread(ULONG thred_input);
 #define CDC_APP_THREAD_DONT_START           TX_DONT_START
 
 UINT cdc_init(VOID *memory_ptr) {
-  
+
 #ifdef PACKET_TRANSMIT_PROGRAM_BY_THREAD_ENABLE
   TX_BYTE_POOL *byte_pool = (TX_BYTE_POOL *)memory_ptr;
 
@@ -95,6 +95,7 @@ void CDC_thread(ULONG thred_input) {
 }
 
 int _write(int file, char *ptr, int len) {
+  Tramsmit_request = false;
   if (select_buffer) {
     for (uint16_t i = 0; i < len; i++) {
       TX_Buffer_1[Buffer_len + i] = ptr[i];
@@ -105,8 +106,8 @@ int _write(int file, char *ptr, int len) {
     }
   }
 
-  Buffer_len += len;
   Tramsmit_request = true;
+  Buffer_len += len;
 
   return len;
 }
@@ -118,9 +119,11 @@ void print_tx_cplt(UART_HandleTypeDef *huart) {
 }
 
 #ifndef PACKET_TRANSMIT_PROGRAM_BY_THREAD_ENABLE
-void print_tim_nvic_100ms(){
+void print_tim_nvic_100ms() {
   HAL_GPIO_TogglePin(LEDUSB_GPIO_Port, LEDUSB_Pin);
   if (Tramsmit_request && tx_cplt) {
+    tx_cplt          = false;
+    Tramsmit_request = false;
     if (select_buffer) {
       HAL_UART_Transmit_DMA(&huart1, TX_Buffer_1, Buffer_len);
     } else {
@@ -128,8 +131,6 @@ void print_tim_nvic_100ms(){
     }
     select_buffer    = !select_buffer;
     Buffer_len       = 0;
-    tx_cplt          = false;
-    Tramsmit_request = false;
   }
 }
 #endif
