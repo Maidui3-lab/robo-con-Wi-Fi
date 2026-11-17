@@ -41,14 +41,16 @@ __attribute__RAM_D2__BSS__ uint16_t ADC2_Buffer[2];
 // IN10 LY
 // IN11 LX
 
-__attribute__DTCM__BSS__ joystick_state_t joystick;
-__attribute__DTCM__BSS__ LiPo_state_e LiPo_State;
-__attribute__DTCM__BSS__ button_state_t button;
-__attribute__DTCM__BSS__ up_senter_side_button_t button_f;
+__attribute__RAM_D2__ uint8_t message[] = "ThreadX start -> ~s\r\n";
 
-__attribute__DTCM__BSS__ bool LiPo_Toggle_LED;
+joystick_state_t joystick;
+LiPo_state_e LiPo_State;
+button_state_t button;
+up_senter_side_button_t button_f;
 
-__attribute__DTCM__BSS__ TX_THREAD robo_con_Thread;
+bool LiPo_Toggle_LED;
+
+TX_THREAD robo_con_Thread;
 
 __attribute__ITCM__ void robo_con_thread(ULONG thred_input);
 
@@ -100,31 +102,46 @@ UINT robo_con_init(VOID *memory_ptr) {
 
   mcu_wake_led();
 
+  HAL_Delay(500);
+  for (int8_t i = 5; i > -1; i--) {
+    message[17] = i + 48;
+    HAL_UART_Transmit_DMA(&huart1, message, sizeof(message));
+    HAL_GPIO_WritePin(LEDUSB_GPIO_Port, LEDUSB_Pin, GPIO_PIN_SET);
+    HAL_Delay(500);
+    HAL_GPIO_WritePin(LEDUSB_GPIO_Port, LEDUSB_Pin, GPIO_PIN_RESET);
+    HAL_Delay(500);
+  }
+
   HAL_TIM_Base_Start_IT(&htim6);
   HAL_TIM_Base_Start_IT(&htim7);
 
   return ROBO_CON_SUCCSES;
 }
 
+// #define CHECK_ADC
 void robo_con_thread(ULONG thred_input) {
+#ifdef CHECK_ADC
   static uint8_t tick_count;
+#endif
 
   while (1) {
     __enable_irq();
 
-    if (tick_count >= 100) {
+#ifdef CHECK_ADC
+    if (tick_count >= 50) {
       HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
 
       /*ADCチェック用*/
-      //printf("LIPO -> %d : ", ADC1_Buffer[0]);
-      //printf("LY -> %d : ", ADC1_Buffer[1]);
-      //printf("LX -> %d : ", ADC1_Buffer[2]);
-      //printf("RY -> %d : ", ADC2_Buffer[0]);
-      //printf("RX -> %d\r\n", ADC2_Buffer[1]);
+      printf("LIPO -> %d : ", ADC1_Buffer[0]);
+      printf("RY -> %d : ", ADC1_Buffer[1]);
+      printf("RX -> %d : ", ADC1_Buffer[2]);
+      printf("LY -> %d : ", ADC2_Buffer[0]);
+      printf("LX -> %d\r\n", ADC2_Buffer[1]);
 
       tick_count = 0;
     }
     tick_count++;
+#endif
 
     update_joystick(joystick);
     update_LiPo_State(LiPo_State);

@@ -11,17 +11,19 @@
 #define CDC_MAX_TRANSPORT_SIZE 512
 
 #define USB_TX_BUFFER_SIZE CDC_MAX_TRANSPORT_SIZE * 16U
-__attribute__RAM_D1__BSS__ uint8_t TX_Buffer[USB_TX_BUFFER_SIZE];
-__attribute__DTCM__BSS__ uint8_t RX_Buffer[2048];
-__attribute__DTCM__BSS__ uint16_t Buffer_len;
-__attribute__DTCM__BSS__ uint16_t tx_start_point;
-__attribute__DTCM__BSS__ uint16_t rest;
-__attribute__DTCM__BSS__ bool Tramsmit_request;
-__attribute__DTCM__BSS__ bool tx_cplt;
+#define USB_RX_BUFFER_SIZE CDC_MAX_TRANSPORT_SIZE * 4U
+__attribute__RAM_D1__BSS__ uint8_t TX_Buffer_0[USB_TX_BUFFER_SIZE];
+__attribute__RAM_D1__BSS__ uint8_t TX_Buffer_1[USB_TX_BUFFER_SIZE];
+__attribute__RAM_D1__BSS__ uint8_t RX_Buffer[USB_RX_BUFFER_SIZE];
 
-__attribute__RAM_D1__BSS__ uint8_t ex_tx[] = "SETUP CDC Thread";
+__attribute__RAM_D2__ uint8_t ex_tx[] = "SETUP CDC Thread\r\n";
 
-__attribute__DTCM__ TX_THREAD CDC_Thread;
+uint16_t Buffer_len;
+bool Tramsmit_request;
+bool tx_cplt;
+bool select_buffer;
+
+TX_THREAD CDC_Thread;
 
 __attribute__ITCM__ void CDC_thread(ULONG thred_input);
 
@@ -71,17 +73,16 @@ void CDC_thread(ULONG thred_input) {
     HAL_GPIO_TogglePin(LEDUSB_GPIO_Port, LEDUSB_Pin);
 
     if (Tramsmit_request && tx_cplt) {
-
-      if (tx_start_point > Buffer_len) {
-        HAL_UART_Transmit_DMA(&huart1, &TX_Buffer[tx_start_point], rest);
-        tx_start_point = 0;
-        tx_cplt        = false;
+      if (select_buffer) {
+        HAL_UART_Transmit_DMA(&huart1, TX_Buffer_1, Buffer_len);
       } else {
-        HAL_UART_Transmit_DMA(&huart1, &TX_Buffer[tx_start_point], Buffer_len);
-        tx_start_point   = Buffer_len;
-        tx_cplt          = false;
-        Tramsmit_request = false;
+        HAL_UART_Transmit_DMA(&huart1, TX_Buffer_0, Buffer_len);
       }
+
+      select_buffer    = !select_buffer;
+      Buffer_len       = 0;
+      tx_cplt          = false;
+      Tramsmit_request = false;
     }
 
     tx_thread_sleep(50);
@@ -89,29 +90,17 @@ void CDC_thread(ULONG thred_input) {
 }
 
 int _write(int file, char *ptr, int len) {
-  static uint16_t size;
-
-  size           = Buffer_len + len;
-  tx_start_point = Buffer_len;
-
-  if (size > USB_TX_BUFFER_SIZE) {
-    Buffer_len = size - USB_TX_BUFFER_SIZE;
-    rest       = USB_TX_BUFFER_SIZE - tx_start_point;
-
-    for (uint16_t i = 0; i < rest; i++) {
-      TX_Buffer[tx_start_point + i] = ptr[i];
-    }
-    for (uint16_t i = 0; i < Buffer_len; i++) {
-      TX_Buffer[i] = ptr[i + rest];
+  if (select_buffer) {
+    for (uint16_t i = 0; i < len; i++) {
+      TX_Buffer_1[Buffer_len + i] = ptr[i];
     }
   } else {
     for (uint16_t i = 0; i < len; i++) {
-      TX_Buffer[tx_start_point + i] = ptr[i];
+      TX_Buffer_0[Buffer_len + i] = ptr[i];
     }
-    Buffer_len += len;
   }
-  Buffer_len += 1;
 
+  Buffer_len += len;
   Tramsmit_request = true;
 
   return len;
