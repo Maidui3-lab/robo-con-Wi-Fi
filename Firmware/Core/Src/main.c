@@ -246,7 +246,7 @@ void PeriphCommonClock_Config(void)
   PeriphClkInitStruct.PLL2.PLL2N = 112;
   PeriphClkInitStruct.PLL2.PLL2P = 2;
   PeriphClkInitStruct.PLL2.PLL2Q = 70;
-  PeriphClkInitStruct.PLL2.PLL2R = 56;
+  PeriphClkInitStruct.PLL2.PLL2R = 28;
   PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_2;
   PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
   PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
