@@ -219,6 +219,9 @@ void mcu_wake_led() {
   HAL_GPIO_WritePin(LEDUSB_GPIO_Port, LEDUSB_Pin, GPIO_PIN_SET);
 }
 
+void update_ThreadX_info(){
+}
+
 extern "C" {
 void tim_lib(TIM_HandleTypeDef *htim) {
   // 10Hz
