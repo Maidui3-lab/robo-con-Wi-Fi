@@ -38,7 +38,7 @@ RAM_BackUp(xrw)   : ORIGIN = 0x38800000, LENGTH = 4K
 }
 
 /* Highest address of the user mode stack */
-_estack = ORIGIN(DTCMRAM) + LENGTH(DTCMRAM);    /* end of RAM */
+_estack = ORIGIN(RAM_D1) + LENGTH(RAM_D1);    /* end of RAM */
 _sstack = _estack - _Min_Stack_Size;
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size = 0x8000;      /* required amount of heap  */
