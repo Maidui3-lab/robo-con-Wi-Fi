@@ -95,6 +95,9 @@ void CDC_thread(ULONG thred_input) {
 }
 
 int _write(int file, char *ptr, int len) {
+  __disable_irq();
+  if((Buffer_len + len) >= USB_TX_BUFFER_SIZE) return len;
+
   Tramsmit_request = false;
   if (select_buffer) {
     for (uint16_t i = 0; i < len; i++) {
@@ -108,6 +111,7 @@ int _write(int file, char *ptr, int len) {
 
   Tramsmit_request = true;
   Buffer_len += len;
+  __enable_irq();
 
   return len;
 }
